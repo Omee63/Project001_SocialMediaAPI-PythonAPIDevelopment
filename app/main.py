@@ -1,25 +1,17 @@
 from random import randrange
 from typing import Optional
-from fastapi import FastAPI, Body, Response, status, HTTPException
+from fastapi import FastAPI, Body, Response, status, HTTPException, Depends
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
-from . import models
-from .database import engine, SessionLocal
+from app import models
+from app.database import engine, get_db
+from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)  # don't know actual implementation, just followed the documentation
 
 app = FastAPI()
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 class Post(BaseModel):  # Post request regulation using FastAPI.
@@ -64,6 +56,11 @@ def root():
     return {"message": "Hello World!"}
 
 
+@app.get("/sqlalchemy")
+def test_post(db: Session = Depends(get_db)):
+    return {"status": "success"}
+
+
 @app.get("/posts")
 def get_posts():
     cursor.execute("""SELECT * FROM posts""")
@@ -71,12 +68,12 @@ def get_posts():
     return {"data": posts}
 
 
-@app.post("/posts",
-          status_code=status.HTTP_201_CREATED)  # status code have to be selected according to HTTP response status code Documentaiton
+# status code have to be selected according to HTTP response status code documentation
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):
+    # '%s' aka placeholder is representing the items of the second parameter sequentially, kind of f{} type
     cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *""",
-                   (post.title, post.content,
-                    post.published))  # '%s' aka placeholder is represnting the items of the second parameter sequentially, kind of f{} type
+                   (post.title, post.content, post.published))
     new_post = cursor.fetchone()
     conn.commit()
     return {"data": new_post}
