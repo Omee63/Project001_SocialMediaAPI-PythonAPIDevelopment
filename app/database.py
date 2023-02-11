@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import time
 
 # connection string type that has to pass to the SQLAlchemy
 # SQLALCHEMY_DATABASE_URL = 'postgresql://<username>:<password>@<ip-address/hostname>/<database_name>'
@@ -20,6 +23,20 @@ Base = declarative_base()
 def get_db():
     db = SessionLocal()
     try:
-        yield db    # 'yield' is similar to 'return', but returns a generator object.
+        yield db  # 'yield' is similar to 'return', but returns a generator object.
     finally:
         db.close()
+
+
+# connecting to the database using Postgres driver
+# while True:
+#     try:
+#         conn = psycopg2.connect(host='localhost', database='fastapiDB', user='postgres', password='01521504004',
+#                                 cursor_factory=RealDictCursor)
+#         cursor = conn.cursor()
+#         print("Successfully connected to the Database!")
+#         break
+#     except Exception as error:
+#         print("Connecting to database failed")
+#         print("Error: ", error)
+#         time.sleep(2)

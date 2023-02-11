@@ -1,7 +1,4 @@
 from fastapi import FastAPI
-import psycopg2
-from psycopg2.extras import RealDictCursor
-import time
 from app import models
 from app.database import engine
 from app.routers import post, user, auth
@@ -17,35 +14,6 @@ app = FastAPI()
 #     # optional field. may or may not be provided. But if provided it has to be int type
 #     # rating: Optional[int] = None
 #     # id: Optional[int] = None
-
-
-while True:
-    try:
-        conn = psycopg2.connect(host='localhost', database='fastapiDB', user='postgres', password='01521504004',
-                                cursor_factory=RealDictCursor)
-        cursor = conn.cursor()
-        print("Successfully connected to the Database!")
-        break
-    except Exception as error:
-        print("Connecting to database failed")
-        print("Error: ", error)
-        time.sleep(2)
-
-my_posts = [{"title": "title of post 1", "content": "content of post 1", "id": 1}, {"title": "favorite food",
-                                                                                    "content": "I like burger",
-                                                                                    "id": 2}]
-
-
-def post_finder(id):
-    for p in my_posts:
-        if p['id'] == id:
-            return p
-
-
-def find_index_post(id):
-    for i, p in enumerate(my_posts):
-        if p['id'] == id:
-            return i
 
 
 app.include_router(post.router)
