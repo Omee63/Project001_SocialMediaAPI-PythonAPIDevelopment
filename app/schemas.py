@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
@@ -15,9 +16,20 @@ class PostCreate(PostBase):
     pass
 
 
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    created_ad: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class Post(PostBase):
     id: int
     created_ad: datetime
+    owner_id: int
+    owner: UserOut  # A Pydantic Model which will return User according to 'UserOut' model.
 
     # we are telling to convert SqlAlchemy model to Pydantic model,
     # since Pydantic has no idea what to do with SqlAlchemy model
@@ -30,15 +42,15 @@ class UserCreation(BaseModel):
     password: str
 
 
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
-    created_ad: datetime
-
-    class Config:
-        orm_mode = True
-
-
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    id: Optional[str] = None
