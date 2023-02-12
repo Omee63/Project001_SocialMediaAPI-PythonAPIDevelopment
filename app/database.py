@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from app.config import settings
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
@@ -8,7 +9,9 @@ import time
 # connection string type that has to pass to the SQLAlchemy
 # SQLALCHEMY_DATABASE_URL = 'postgresql://<username>:<password>@<ip-address/hostname>/<database_name>'
 
-SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:01521504004@localhost/fastapiDB'
+# SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:01521504004@localhost/fastapiDB'
+SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.database_username}:{settings.database_password}' \
+                          f'@{settings.database_hostname}:{settings.database_port}/{settings.database_name}'
 
 # The Engine is responsible for the SQLAlchemy to connect with the database
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -26,7 +29,6 @@ def get_db():
         yield db  # 'yield' is similar to 'return', but returns a generator object.
     finally:
         db.close()
-
 
 # connecting to the database using Postgres driver
 # while True:

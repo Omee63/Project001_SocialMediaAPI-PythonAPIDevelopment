@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from app import models
+from app.config import settings
 from app.database import engine
-from app.routers import post, user, auth
+from app.routers import post, user, auth, vote
+
+
+print(settings.database_username)
 
 models.Base.metadata.create_all(bind=engine)  # don't know actual implementation, just followed the documentation
 
@@ -19,6 +23,7 @@ app = FastAPI()
 app.include_router(post.router)
 app.include_router(user.router)
 app.include_router(auth.router)
+app.include_router(vote.router)
 
 
 @app.get("/")  # @app is a decorator in py. get() is HTTP Method. "/" is root path, here its local path.

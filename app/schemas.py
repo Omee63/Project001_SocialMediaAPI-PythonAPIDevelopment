@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional
-
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 
 
 class PostBase(BaseModel):  # Post request regulation using FastAPI. BaseModel coming from Pydantic model.
@@ -54,3 +53,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[str] = None
+
+
+class Vote(BaseModel):
+    post_id: str
+    dir: conint(le=1)
