@@ -3,13 +3,29 @@ from app import models
 from app.config import settings
 from app.database import engine
 from app.routers import post, user, auth, vote
+from fastapi.middleware.cors import CORSMiddleware
 
 
 print(settings.database_username)
 
-models.Base.metadata.create_all(bind=engine)  # don't know actual implementation, just followed the documentation
+# This tell SqlAlchemy to run create statement so that it can generate all the tables when first started up.
+# since we have Alembic we don't need below command lind
+# models.Base.metadata.create_all(bind=engine)
+
+# origins = ["https://www.google.com", "https://www.youtube.com"]
+origins = ["*"]
+
 
 app = FastAPI()
+# we are doing below to perform CORS
+app.add_middleware(
+    CORSMiddleware,     # 'CORSMiddleware' is function that runs before every request
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # class Post(BaseModel):  # Post request regulation using FastAPI. BaseModel coming from Pydantic model.
 #     title: str
