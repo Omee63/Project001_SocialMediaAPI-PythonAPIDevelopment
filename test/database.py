@@ -17,7 +17,6 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
 # To create a testing database we are creating another 'override_get_db()' which going to give
 # a different session object. And this session object is going to point another Database
 
@@ -50,7 +49,8 @@ client = TestClient(app)
 #     Base.metadata.drop_all(bind=engine)
 
 # with SqlAlchemy
-@pytest.fixture
+@pytest.fixture(scope="module")  # we are changing the Scope of the Fixture to "module",
+# unlike "function" Scope the fixture is destroyed during teardown of the last test in the module.
 def session():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -61,7 +61,7 @@ def session():
         db.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def client(session):
     def override_get_db():
         try:
