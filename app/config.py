@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_time_minutes: int
 
-    # We are telling Pydantic to import ".env" file.
+    # We are telling Pydantic to import values from ".env" file.
     class Config:
         env_file = ".env"
 
